@@ -1,0 +1,21 @@
+{
+  "name": "trade-machine",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.17.1",
+    "nba": "^4.0.1",
+    "react": "^15.6.2",
+    "react-atlas": "0.1.0-beta21",
+    "react-bootstrap-table": "^4.1.3",
+    "react-dom": "^15.6.2",
+    "react-scripts": "1.0.17",
+    "react-virtualized": "^9.12.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
