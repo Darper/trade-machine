@@ -21,10 +21,10 @@ request({
   console.log(body);
 });
 
-
 class App extends Component {
   constructor(props) {
     super(props);
+<<<<<<< HEAD
     
     let teams = [];
     let parsedRosters = [];
