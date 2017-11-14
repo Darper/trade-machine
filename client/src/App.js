@@ -2,10 +2,20 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import rosters from './data/rosters.js';
+import schedule from './data/schedule.js';
 import { Dropdown, Modal, Button } from 'react-atlas';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import '../node_modules/react-atlas/lib/atlasThemes.min.css';
 import NBA from 'nba';
+
+/*
+import ParseHub from 'parsehub';
+var api = new ParseHub("tTyawwH1NEZr");
+api.getAllJobs({ include_last_run: true }, function(err, jobs)
+{
+  console.log(jobs);
+});
+
 var request = require('request');
 
 request({
@@ -19,6 +29,7 @@ request({
 }, function(err, resp, body) {
   console.log(body);
 });
+*/
 
 class App extends Component {
   constructor(props) {
@@ -33,7 +44,7 @@ class App extends Component {
           rosters[property].forEach(function(player, pIndex){
             let playerObject = {};
             const parsedName = player.name.slice(0, player.name.indexOf(","));
-            playerObject.name = parsedName.replace(/[^\w\s]/gi, '')
+            playerObject.name = parsedName.replace('*', '')
             team.push(playerObject);
           });
           parsedRosters[property] = team;
@@ -57,9 +68,7 @@ class App extends Component {
     NBA.stats
       .playerStats()
       .then(response =>
-        this.setState({ players: response.leagueDashPlayerStats }, function(){
-          console.log(this.state.players);
-        })
+        this.setState({ players: response.leagueDashPlayerStats })
       );
   }
 
@@ -78,7 +87,6 @@ class App extends Component {
 
   showPlayerStats = playerName => {
     const player = this.state.players.find(x => x.playerName === playerName);
-    console.log(player);
     const playerArray = [];
     playerArray.push(player);
     this.setState({ statsActivePlayer: playerArray, statsActive: true });
@@ -108,12 +116,10 @@ class App extends Component {
     };
 
     function onRowSelect(row, isSelected, e) {
-      console.log(e);
       let rowStr = '';
       for (const prop in row) {
         rowStr += prop + ': "' + row[prop] + '"';
       }
-      console.log(e);
       alert(`is selected: ${isSelected}, ${rowStr}`);
     }
 
