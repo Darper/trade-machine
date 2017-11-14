@@ -6,7 +6,6 @@ import { Dropdown, Modal, Button } from 'react-atlas';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import '../node_modules/react-atlas/lib/atlasThemes.min.css';
 import NBA from 'nba';
-import nbajs from 'nba.js';
 var request = require('request');
 
 request({
@@ -24,7 +23,6 @@ request({
 class App extends Component {
   constructor(props) {
     super(props);
-<<<<<<< HEAD
     
     let teams = [];
     let parsedRosters = [];
