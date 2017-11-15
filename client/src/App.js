@@ -31,23 +31,49 @@ request({
 });
 */
 
+function search() {
+  return fetch(`http://localhost:3001/api/rosters`, {
+    accept: 'application/json'
+  })
+    .then(checkStatus)
+    .then(parseJSON);
+}
+
+function checkStatus(response) {
+  if (response.status >= 200 && response.status < 300) {
+    return response;
+  } else {
+    const error = new Error(`HTTP Error ${response.statusText}`);
+    error.status = response.statusText;
+    error.response = response;
+    console.log(error); // eslint-disable-line no-console
+    throw error;
+  }
+}
+
+function parseJSON(response) {
+  return response.json();
+}
+
+console.log(search());
+
 class App extends Component {
   constructor(props) {
     super(props);
-    
+
     let teams = [];
     let parsedRosters = [];
     for (var property in rosters) {
       if (rosters.hasOwnProperty(property)) {
-          teams.push(property)
-          let team = [];
-          rosters[property].forEach(function(player, pIndex){
-            let playerObject = {};
-            const parsedName = player.name.slice(0, player.name.indexOf(","));
-            playerObject.name = parsedName.replace('*', '')
-            team.push(playerObject);
-          });
-          parsedRosters[property] = team;
+        teams.push(property);
+        let team = [];
+        rosters[property].forEach(function(player, pIndex) {
+          let playerObject = {};
+          const parsedName = player.name.slice(0, player.name.indexOf(','));
+          playerObject.name = parsedName.replace('*', '');
+          team.push(playerObject);
+        });
+        parsedRosters[property] = team;
       }
     }
 
@@ -103,9 +129,7 @@ class App extends Component {
       </li>
     ));
 
-    function updateTeamStats(player, selected, team) {
-
-    }
+    function updateTeamStats(player, selected, team) {}
 
     const options = {
       onRowClick: (row, columnIndex, rowIndex) =>
@@ -137,9 +161,12 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        {(this.state.firstTeam !== null && this.state.secondTeam !== null) && (
-          <Button primary style={{display: 'block', margin: '10px auto'}}>Analyze Trade</Button>
-        )}
+        {this.state.firstTeam !== null &&
+          this.state.secondTeam !== null && (
+            <Button primary style={{ display: 'block', margin: '10px auto' }}>
+              Analyze Trade
+            </Button>
+          )}
         <div
           style={{
             width: '30%',
