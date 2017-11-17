@@ -15,6 +15,7 @@
     "babel-preset-stage-0": "6.22.0",
     "express": "4.13.3",
     "fs": "0.0.2",
+    "react-atlas": "0.1.0-beta22",
     "request": "^2.83.0",
     "sql.js": "0.3.2"
   },
