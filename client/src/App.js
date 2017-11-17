@@ -1,85 +1,19 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
-import './App.css';
-import rosters from './data/rosters.js';
-import schedule from './data/schedule.js';
-import { Dropdown, Modal, Button } from 'react-atlas';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import '../node_modules/react-atlas/lib/atlasThemes.min.css';
 import NBA from 'nba';
-
-/*
-import ParseHub from 'parsehub';
-var api = new ParseHub("tTyawwH1NEZr");
-api.getAllJobs({ include_last_run: true }, function(err, jobs)
-{
-  console.log(jobs);
-});
-
-var request = require('request');
-
-request({
-  uri: 'https://www.parsehub.com/api/v2/projects/tN2CgU3QsD-t/last_ready_run/data',
-  method: 'GET',
-  gzip: true,
-  qs: {
-    api_key: "tTyawwH1NEZr",
-    format: "json"
-  }
-}, function(err, resp, body) {
-  console.log(body);
-});
-*/
-
-function search() {
-  return fetch(`http://localhost:3001/api/rosters`, {
-    accept: 'application/json'
-  })
-    .then(checkStatus)
-    .then(parseJSON);
-}
-
-function checkStatus(response) {
-  if (response.status >= 200 && response.status < 300) {
-    return response;
-  } else {
-    const error = new Error(`HTTP Error ${response.statusText}`);
-    error.status = response.statusText;
-    error.response = response;
-    console.log(error); // eslint-disable-line no-console
-    throw error;
-  }
-}
-
-function parseJSON(response) {
-  return response.json();
-}
-
-console.log(search());
+import schedule from './data/schedule.js';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { Dropdown, Modal, Button } from 'react-atlas';
+import '../node_modules/react-atlas/lib/atlasThemes.min.css';
+import './App.css';
 
 class App extends Component {
   constructor(props) {
     super(props);
 
-    let teams = [];
-    let parsedRosters = [];
-    for (var property in rosters) {
-      if (rosters.hasOwnProperty(property)) {
-        teams.push(property);
-        let team = [];
-        rosters[property].forEach(function(player, pIndex) {
-          let playerObject = {};
-          const parsedName = player.name.slice(0, player.name.indexOf(','));
-          playerObject.name = parsedName.replace('*', '');
-          team.push(playerObject);
-        });
-        parsedRosters[property] = team;
-      }
-    }
-
     this.state = {
-      teams: teams,
-      rosters: parsedRosters,
+      teams: [],
+      rosters: [],
       players: [],
       firstTeam: null,
       firstTeamStats: {},
@@ -90,15 +24,63 @@ class App extends Component {
     };
   }
 
-  componentDidMount() {
+  getPlayerStats = () => {
+    var that = this;
     NBA.stats
       .playerStats()
       .then(response =>
-        this.setState({ players: response.leagueDashPlayerStats })
+        that.setState({ players: response.leagueDashPlayerStats })
       );
+  };
+
+  getRosters = () => {
+    var that = this;
+    fetch(`http://localhost:3001/api/rosters`, {
+      accept: 'application/json'
+    })
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(data) {
+        let teams = [];
+        let parsedRosters = [];
+        const dataJSON = JSON.parse(data);
+        for (var property in dataJSON) {
+          if (dataJSON.hasOwnProperty(property)) {
+            let positions = [];
+            for (let i = 0; i < property.length; i++) {
+              if (property[i].match(/[A-Z]/) != null) {
+                positions.push(i);
+              }
+            }
+            var output = [
+              property.slice(0, positions[positions.length - 1]),
+              ' ',
+              property.slice(positions[positions.length - 1])
+            ].join('');
+            teams.push(output);
+            let team = [];
+            dataJSON[property].forEach(function(player, pIndex) {
+              let playerObject = {};
+              const parsedName = player.name.slice(0, player.name.indexOf(','));
+              playerObject.name = parsedName.replace('*', '');
+              team.push(playerObject);
+            });
+            parsedRosters[output] = team;
+          }
+        }
+        that.setState({ teams: teams, rosters: parsedRosters }, function() {
+          this.getPlayerStats();
+        });
+      });
+  };
+
+  componentDidMount() {
+    this.getRosters();
   }
 
   setTeam = (value, first) => {
+    console.log(value);
     if (first) {
       this.setState({ firstTeam: value });
     } else {
